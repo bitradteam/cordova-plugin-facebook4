@@ -14,6 +14,8 @@ $ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="12345678
 
 If you need to change your `APP_ID` after installation, it's recommended that you remove and then re-add the plugin as above. Note that changes to the `APP_ID` value in your `config.xml` file will *not* be propagated to the individual platform builds.
 
+IMPORTANT: This plugin works as is with cordova-ios 5 but if you use earlier version of cordova-ios then you need to add the code in the following comment to your CordovaLib/Classes/Public/CDVAppDelegate.m file which was added to your project as part of the cordova-ios ios platform template: https://github.com/apache/cordova-ios/issues/476#issuecomment-460907247
+
 ## Usage
 
 This is a fork of the [official plugin for Facebook](https://github.com/Wizcorp/phonegap-facebook-plugin/) in Apache Cordova that implements the latest Facebook SDK. Unless noted, this is a drop-in replacement. You don't have to replace your client code.
@@ -37,6 +39,20 @@ The Facebook plugin for [Apache Cordova](http://cordova.apache.org/) allows you 
 - [Browser Guide](docs/browser/README.md)
 
 - [Troubleshooting Guide | F.A.Q.](docs/TROUBLESHOOTING.md)
+
+## Facebook SDK
+
+This plugin use the SDKs provided by Facebook. More information about these in their documentation for [iOS](https://developers.facebook.com/docs/ios/) or [Android](https://developers.facebook.com/docs/android/)
+
+### Facebook SDK version
+
+As of v3.0.0, this plugin will always be released for iOS and for Android with a synchronized usage of the Facebook SDKs
+
+For example: v3.0.0 include the Facebook SDK iOS v4.36.0 and reference per default the Facebook SDK Android v4.36.0 too
+
+### Graph API version
+
+Please note that this plugin itself does not specify which Graph API version is used. The Graph API version is set by the Facebook SDK for iOS and Android (see [Facebook documentation about versioning](https://developers.facebook.com/docs/apps/versions/))
 
 ## API
 
@@ -63,6 +79,14 @@ Failure function returns an error String.
 ### Logout
 
 `facebookConnectPlugin.logout(Function success, Function failure)`
+
+### Check permissions (iOS only)
+
+`facebookConnectPlugin.checkHasCorrectPermissions(Array strings of permissions, Function success, Function failure)`
+
+Success function returns a success string if all passed permissions are granted.
+
+Failure function returns an error String if any passed permissions are not granted.
 
 ### Get Status
 
@@ -96,11 +120,16 @@ Share Dialog:
 		href: "http://example.com",
 		caption: "Such caption, very feed.",
 		description: "Much description",
-		picture: 'http://example.com/image.png'
+		picture: 'http://example.com/image.png',
+		hashtag: '#myHashtag',
 		share_feedWeb: true, // iOS only
 	}
 
-For iOS, the default dialog mode is [`FBSDKShareDialogModeAutomatic`](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/). You can share that by adding a specific dialog mode parameter. The available share dialog modes are: `share_sheet`, `share_feedBrowser`, `share_native` and `share_feedWeb`. [Read more about share dialog modes](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/)
+#### iOS
+
+The default dialog mode is [`FBSDKShareDialogModeAutomatic`](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/). You can share that by adding a specific dialog mode parameter. The available share dialog modes are: `share_sheet`, `share_feedBrowser`, `share_native` and `share_feedWeb`. [Read more about share dialog modes](https://developers.facebook.com/docs/reference/ios/current/constants/FBSDKShareDialogMode/)
+
+`caption`, `description` and `picture` were deprecated in Facebok API [v2.9](https://developers.facebook.com/docs/graph-api/changelog/version2.9#gapi-deprecate) and therefore not supported anymore on iOS 
 
 Game request:
 
@@ -175,7 +204,6 @@ For more information see:
 - Graph Explorer - [https://developers.facebook.com/tools/explorer](https://developers.facebook.com/tools/explorer)
 - Graph API - [https://developers.facebook.com/docs/graph-api/](https://developers.facebook.com/docs/graph-api/)
 
-
 # Events
 
 App events allow you to understand the makeup of users engaging with your app, measure the performance of your Facebook mobile app ads, and reach specific sets of your users with Facebook mobile app ads.
@@ -205,45 +233,6 @@ Events are listed on the [insights page](https://www.facebook.com/insights/)
 ### Manually log activation events
 
 `activateApp(Function success, Function failure)`
-
-### App Invites
-
-`facebookConnectPlugin.appInvite(Object options, Function success, Function failure)`
-
-Please check out the [App Invites Overview](https://developers.facebook.com/docs/app-invites/overview) before using this. The URL is expected to be an [App Link](https://developers.facebook.com/docs/applinks).
-
-Example options:
-
-    {
-      url: "http://example.com",
-      picture: "http://example.com/image.png"
-    }
-
-## Sample Code
-
-```js
-facebookConnectPlugin.appInvite(
-    {
-        url: "http://example.com",
-        picture: "http://example.com/image.png"
-    },
-    function(obj){
-        if(obj) {
-            if(obj.completionGesture == "cancel") {
-                // user canceled, bad guy
-            } else {
-                // user really invited someone :)
-            }
-        } else {
-            // user just pressed done, bad guy
-        }
-    },
-    function(obj){
-        // error
-        console.log(obj);
-    }
-);
-```
 
 ### Login
 
@@ -336,3 +325,15 @@ facebookConnectPlugin.showDialog({
   }
 );
 ```
+
+### Hybrid Mobile App Events
+
+Starting from Facebook SDK v4.34 for both iOS and Android, there is a new way of converting pixel events into mobile app events. For more information: [https://developers.facebook.com/docs/app-events/hybrid-app-events/](https://developers.facebook.com/docs/app-events/hybrid-app-events/)
+
+In order to enable this feature in your cordova app, please set the *FACEBOOK_HYBRID_APP_EVENTS* variable to "true"(default is false):
+```bash
+$ cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="123456789" --variable APP_NAME="myApplication" --variable FACEBOOK_HYBRID_APP_EVENTS="true"
+```
+Please check [this repo](https://github.com/msencer/fb_hybrid_app_events_sample) for an example app using this feature.
+
+**NOTE(iOS):** This feature only works with WKWebView so until [Cordova iOS 5 is relased](https://cordova.apache.org/news/2018/08/01/future-cordova-ios-webview.html), an additional plugin (e.g cordova-plugin-wkwebview-engine) is needed.

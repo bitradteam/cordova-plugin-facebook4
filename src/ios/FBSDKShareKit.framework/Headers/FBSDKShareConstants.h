@@ -18,38 +18,63 @@
 
 #import <Foundation/Foundation.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
+NS_ASSUME_NONNULL_BEGIN
 
-/*!
- @abstract The error domain for all errors from FBSDKShareKit.
- @discussion Error codes from the SDK in the range 200-299 are reserved for this domain.
- */
-FBSDK_EXTERN NSString *const FBSDKShareErrorDomain;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 
-/*!
- @typedef NS_ENUM(NSInteger, FBSDKShareErrorCode)
- @abstract Error codes for FBSDKShareErrorDomain.
+/**
+ The error domain for all errors from FBSDKShareKit.
+
+ Error codes from the SDK in the range 200-299 are reserved for this domain.
  */
-typedef NS_ENUM(NSInteger, FBSDKShareErrorCode)
+FOUNDATION_EXPORT NSErrorDomain const FBSDKShareErrorDomain
+NS_SWIFT_NAME(ShareErrorDomain);
+
+#else
+
+/**
+ The error domain for all errors from FBSDKShareKit.
+
+ Error codes from the SDK in the range 200-299 are reserved for this domain.
+ */
+FOUNDATION_EXPORT NSString *const FBSDKShareErrorDomain
+NS_SWIFT_NAME(ShareErrorDomain);
+
+#endif
+
+#ifndef NS_ERROR_ENUM
+#define NS_ERROR_ENUM(_domain, _name) \
+enum _name: NSInteger _name; \
+enum __attribute__((ns_error_domain(_domain))) _name: NSInteger
+#endif
+
+/**
+ FBSDKShareError
+ Error codes for FBSDKShareErrorDomain.
+ */
+typedef NS_ERROR_ENUM(FBSDKShareErrorDomain, FBSDKShareError)
 {
-  /*!
-   @abstract Reserved.
+  /**
+   Reserved.
    */
-  FBSDKShareReservedErrorCode = 200,
+  FBSDKShareErrorReserved = 200,
 
-  /*!
-   @abstract The error code for errors from uploading open graph objects.
+  /**
+   The error code for errors from uploading open graph objects.
    */
-  FBSDKShareOpenGraphErrorCode,
+  FBSDKShareErrorOpenGraph,
 
-  /*!
-   @abstract The error code for when a sharing dialog is not available.
-   @discussion Use the canShare methods to check for this case before calling show.
+  /**
+   The error code for when a sharing dialog is not available.
+
+   Use the canShare methods to check for this case before calling show.
    */
-  FBSDKShareDialogNotAvailableErrorCode,
+  FBSDKShareErrorDialogNotAvailable,
 
-  /*!
+  /**
    @The error code for unknown errors.
    */
-  FBSDKShareUnknownErrorCode,
-};
+  FBSDKShareErrorUnknown,
+} NS_SWIFT_NAME(ShareError);
+
+NS_ASSUME_NONNULL_END
