@@ -25,8 +25,8 @@
     <engines>
         <!-- Requires > 3.5.0 because of the custom Framework tag for iOS [CB-6698] -->
         <!-- Requires > 4.0.0 because of the Framework tag for Android that uses gradle -->
-        <engine name="cordova-android" version=">=3.5.0" />
-        <engine name="cordova-ios" version=">=3.5.0" />
+        <engine name="cordova-android" version=">=4.3.0" />
+        <engine name="cordova-ios" version=">=4.0.0" />
     </engines>
 
     <!-- android -->
