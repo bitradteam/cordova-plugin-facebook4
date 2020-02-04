@@ -794,10 +794,10 @@ void FBMethodSwizzle(Class c, SEL originalSelector) {
     // NOTE: Cordova will run a JavaScript method here named handleOpenURL. This functionality is deprecated
     // but will cause you to see JavaScript errors if you do not have window.handleOpenURL defined:
     // https://github.com/Wizcorp/phonegap-facebook-plugin/issues/703#issuecomment-63748816
-    NSLog(@"FB handle url using application:openURL:options: %@", url);
+    //NSLog(@"FB handle url using application:openURL:options: %@", url);
 
     // Call existing method
-    return [self swizzled_application:application openURL:url options:options];
+    //return [self swizzled_application:application openURL:url options:options];
 }
 
 - (BOOL)noop_application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
